@@ -21,7 +21,7 @@ const swagger = {
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
     },
   },
-  host: `localhost:${port}`,
+  host: `${hostName}`,
   basePath: '/api',
   tags: [
     {
