@@ -5,16 +5,18 @@ const {saveBill} = require('../modal/billHistory');
 const saveProduct = async (req,res) => {
     try{
       const {code,name,price,gst} = req.body;
-      await save({code,name,price,gst},res);
+      const {id} = req.user;
+      await save({userId:id,code,name,price,gst},res);
       return res.status(200).send({sucess:true});
     }
     catch(ex){
-      if(ex.code === 11000){
       logger.error({ex});
-       return res.status(401).send("products already exists");  
+      if (ex.code === 'ER_DUP_ENTRY') {
+        return res.status(409).send({
+          email: 'product  already exist',
+        });
       }
-      else
-      return res.status(500).send("something went wrong");
+      else return res.status(500).send("something went wrong");
     }
   };
 
@@ -36,12 +38,14 @@ const getProduct = async (req,res) => {
 const generateBill = async (req,res) => {
     try{
         const {code,qty} = req.query;
+        const {id} = req.user;
         const productDetail = await get({code});
-        const {price:pricePerUnit,gst} = productDetail[0];
+        const {price_per_unit:pricePerUnit,gst} = productDetail;
         const price = pricePerUnit * qty;
-        const gstValue = (gst/100)* gst;
+        const gstValue = (gst/100)* price;
         const totalPrice = price + gstValue;
         const bill = {
+            userId:id,
             code,
             pricePerUnit,
             price,

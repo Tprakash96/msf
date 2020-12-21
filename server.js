@@ -6,15 +6,17 @@ const logger = require('pino')();
 
 const app = express();
 const config = require('./config');
+const { mysqlConnection } = require("./src/db/mysql/connection");
 
 const port = config.port || 8080;
 async function main() {
-  mongoose.Promise = global.Promise;
-  // eslint-disable-next-line max-len
-  mongoose.connect(config.localUrl, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  });
+  // mongoose.Promise = global.Promise;
+  // // eslint-disable-next-line max-len
+  // mongoose.connect(config.localUrl, {
+  //   useUnifiedTopology: true,
+  //   useNewUrlParser: true,
+  // });
+  mysqlConnection();
   app.use(morgan('dev'));
   app.use(bodyParser.urlencoded({ extended: 'true' }));
   app.use(bodyParser.json());

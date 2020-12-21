@@ -24,9 +24,8 @@ const checkPassword = (user, pass) => {
   try{
     if (user === null) {return {err:'Invalid Object'};}
     // eslint-disable-next-line no-underscore-dangle
-    const tokenObj = { ...user._doc };
+    const tokenObj = { ...user };
     const { password} = user;
-    console.log({password});
     if (!bcrypt.compareSync(pass, password)){
       return {err:'Invalid Object'}
     };

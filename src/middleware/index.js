@@ -2,7 +2,7 @@
 /* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
 const config = require('../../config');
-const Users = require('../db/collections/users');
+const { get } = require('../modal/user');
 
 const { jwtSecret } = config;
 const middleware = () => async (req, res, next) => {
@@ -18,8 +18,11 @@ const middleware = () => async (req, res, next) => {
         token,
         jwtSecret
       );
-      const user = await Users.findOne({ email, isActive: true });
+      const user = await get({ email });
       if(user && Object.keys(user).length>0){
+        console.log('valid user');
+        const {id}  = user;
+        req.user = {id};
         return next();
       } 
       else return res.status(401).send({errMsg: 'unAtuthorized user'});

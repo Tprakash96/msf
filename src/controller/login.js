@@ -3,9 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const logger = require('pino')();
 const { validate } = require('../validator/index');
-const { save } = require('../modal/user');
+const { save,get } = require('../modal/user');
 const { jwtSecret,jwtExpiry } = require('../../config');
-const Users = require('../db/collections/users');
 const {
   checkLoginParameter,
   checkPassword,
@@ -29,16 +28,22 @@ const signup = async (req,res) => {
     if(err) res.status(500).send(err);
     return res.status(200).send({sucess:true});
   }
+  
   catch(ex){
     logger.error({ex});
-    return res.status(500).send("something went wrong");
+    if (ex.code === 'ER_DUP_ENTRY') {
+      return res.status(409).send({
+        email: 'email  already exist',
+      });
+    }
+    else return res.status(500).send("something went wrong");
   }
 };
 
 const login = async (req,res) => {
   try{
     const { email, password } = checkLoginParameter(req.body);
-    const user = await Users.findOne({ email });
+    const user = await get({ email });
     const { err,tokenObj } = checkPassword(user, password);
 
     if(err) return res.status(401).send({errMsg:'Invalid userName/Password'});
