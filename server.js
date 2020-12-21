@@ -15,13 +15,9 @@ async function main() {
     useUnifiedTopology: true,
     useNewUrlParser: true,
   });
-  app.use(express.json({ limit: '50mb' }));
   app.use(morgan('dev'));
   app.use(bodyParser.urlencoded({ extended: 'true' }));
   app.use(bodyParser.json());
-  app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
-  app.use(express.static(__dirname + '/public'));
-  
   // eslint-disable-next-line global-require
   require('./src/routes/routes')(app);
   logger.info(`App listening on port ${port}`);
